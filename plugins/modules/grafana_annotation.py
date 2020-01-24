@@ -224,9 +224,9 @@ class GrafanaAnnotationService(object):
         return self._create_annotation_object(response[0])
 
     def delete_annotation(self, annotation):
-      url = "/api/annotations/%d" % annotation.id
-      response = self._send_request(url, headers=self.headers, method="DELETE")
-      return response
+        url = "/api/annotations/%d" % annotation.id
+        response = self._send_request(url, headers=self.headers, method="DELETE")
+        return response
 
     def _create_annotation_object(self, response):
         return GrafanaAnnotation(
@@ -318,7 +318,6 @@ argument_spec.update(
 
 
 def main():
-
     module = setup_module_object()
     state = module.params['state']
     text = module.params['text']
@@ -343,34 +342,17 @@ def main():
             grafana_service.create_annotation(annotation_from_params)
             annotation = grafana_service.get_annotation(annotation_from_params)
             changed = True
-        #if members is not None: # update
-        #    cur_members = grafana_service.get_team_members(team.get("id"))
-        #    plan = diff_members(members, cur_members)
-        #    for member in plan.get("to_add"):
-        #        grafana_service.add_team_member(team.get("id"), member)
-        #        changed = True
-        #    team = grafana_service.get_team(name)
+
         module.exit_json(failed=False, changed=changed,
                          annotation=annotation.json)
     elif state == 'absent':
-       annotation = grafana_service.get_annotation(annotation_from_params)
-       if annotation is None:
-           module.exit_json(failed=False, changed=False,
-                            message="No annotation found")
-       result = grafana_service.delete_annotation(annotation)
-       module.exit_json(failed=False, changed=True,
-                        message=result.get("message"))
-
-
-#def diff_members(target, current):
-#    diff = {"to_del": [], "to_add": []}
-#    for member in target:
-#        if member not in current:
-#            diff["to_add"].append(member)
-#    for member in current:
-#        if member not in target:
-#            diff["to_del"].append(member)
-#    return diff
+        annotation = grafana_service.get_annotation(annotation_from_params)
+        if annotation is None:
+            module.exit_json(failed=False, changed=False,
+                             message="No annotation found")
+        result = grafana_service.delete_annotation(annotation)
+        module.exit_json(failed=False, changed=True,
+                         message=result.get("message"))
 
 
 if __name__ == '__main__':

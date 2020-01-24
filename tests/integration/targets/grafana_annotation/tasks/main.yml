@@ -1,0 +1,30 @@
+---
+- name: Create a Grafana annotation with a specified timestamp
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ now }}"
+    text: "I am Batman"
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == true"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified timestamp (idempotence)
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ now }}"
+    text: "I am Batman"
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == false"
+      - "result.failed == false"
