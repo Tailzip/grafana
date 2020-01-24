@@ -1,4 +1,22 @@
 ---
+- set_fact:
+    now: "{{ lookup('pipe','date +%s') | int *1000 }}"
+    past: "{{ now | int - (5 * 60 * 1000) }}"
+
+# - name: Create a Grafana annotation without a timestamp
+#   grafana_annotation:
+#     url: "http://127.0.0.1:3000"
+#     url_username: admin
+#     url_password: admin
+#     text: "I am Batman"
+#     state: present
+#   register: result
+#   ignore_errors: yes
+# - assert:
+#     that:
+#       - "result.changed == true"
+#       - "result.failed == false"
+
 - name: Create a Grafana annotation with a specified timestamp
   grafana_annotation:
     url: "http://127.0.0.1:3000"
@@ -14,13 +32,543 @@
       - "result.changed == true"
       - "result.failed == false"
 
-- name: Create a Grafana annotation with a specified timestamp (idempotence)
+- name: Create a Grafana annotation with a specified timestamp (idempotency)
   grafana_annotation:
     url: "http://127.0.0.1:3000"
     url_username: admin
     url_password: admin
     time: "{{ now }}"
     text: "I am Batman"
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == false"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified timestamp with panel_id
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ now }}"
+    text: "I am Batman"
+    panel_id: 1
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == true"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified timestamp with panel_id (idempotency)
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ now }}"
+    text: "I am Batman"
+    panel_id: 1
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == false"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified timestamp with dashboard_id
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ now }}"
+    text: "I am Batman"
+    dashboard_id: 1
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == true"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified timestamp with dashboard_id (idempotency)
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ now }}"
+    text: "I am Batman"
+    dashboard_id: 1
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == false"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified timestamp and tags
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ now }}"
+    text: "I am Batman"
+    tags:
+      - gotham
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == true"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified timestamp and tags (idempotency)
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ now }}"
+    text: "I am Batman"
+    tags:
+      - gotham
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == false"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified timestamp and tags and panel_id
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ now }}"
+    text: "I am Batman"
+    tags:
+      - gotham
+    panel_id: 1
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == true"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified timestamp and tags and panel_id (idempotency)
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ now }}"
+    text: "I am Batman"
+    tags:
+      - gotham
+    panel_id: 1
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == false"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified timestamp and tags and dashboard_id
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ now }}"
+    text: "I am Batman"
+    tags:
+      - gotham
+    dashboard_id: 1
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == true"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified timestamp and tags and dashboard_id (idempotency)
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ now }}"
+    text: "I am Batman"
+    tags:
+      - gotham
+    dashboard_id: 1
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == false"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified timestamp and tags and panel_id and dashboard_id
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ now }}"
+    text: "I am Batman"
+    tags:
+      - gotham
+    panel_id: 1
+    dashboard_id: 1
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == true"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified timestamp and tags and panel_id and dashboard_id (idempotency)
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ now }}"
+    text: "I am Batman"
+    tags:
+      - gotham
+    panel_id: 1
+    dashboard_id: 1
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == false"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified timestamp and panel_id and dashboard_id
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ now }}"
+    text: "I am Batman"
+    panel_id: 1
+    dashboard_id: 1
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == true"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified timestamp and panel_id and dashboard_id (idempotency)
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ now }}"
+    text: "I am Batman"
+    panel_id: 1
+    dashboard_id: 1
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == false"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified range timestamp
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ past }}"
+    time_end: "{{ now }}"
+    text: "I am Batman"
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == true"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified range timestamp (idempotency)
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ past }}"
+    time_end: "{{ now }}"
+    text: "I am Batman"
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == false"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified range timestamp with panel_id
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ past }}"
+    time_end: "{{ now }}"
+    text: "I am Batman"
+    panel_id: 1
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == true"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified range timestamp with panel_id (idempotency)
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ past }}"
+    time_end: "{{ now }}"
+    text: "I am Batman"
+    panel_id: 1
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == false"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified range timestamp with dashboard_id
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ past }}"
+    time_end: "{{ now }}"
+    text: "I am Batman"
+    dashboard_id: 1
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == true"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified range timestamp with dashboard_id (idempotency)
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ past }}"
+    time_end: "{{ now }}"
+    text: "I am Batman"
+    dashboard_id: 1
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == false"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified range timestamp and tags
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ past }}"
+    time_end: "{{ now }}"
+    text: "I am Batman"
+    tags:
+      - gotham
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == true"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified range timestamp and tags (idempotency)
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ past }}"
+    time_end: "{{ now }}"
+    text: "I am Batman"
+    tags:
+      - gotham
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == false"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified range timestamp and tags and panel_id
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ past }}"
+    time_end: "{{ now }}"
+    text: "I am Batman"
+    tags:
+      - gotham
+    panel_id: 1
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == true"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified range timestamp and tags and panel_id (idempotency)
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ past }}"
+    time_end: "{{ now }}"
+    text: "I am Batman"
+    tags:
+      - gotham
+    panel_id: 1
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == false"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified range timestamp and tags and dashboard_id
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ past }}"
+    time_end: "{{ now }}"
+    text: "I am Batman"
+    tags:
+      - gotham
+    dashboard_id: 1
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == true"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified range timestamp and tags and dashboard_id (idempotency)
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ past }}"
+    time_end: "{{ now }}"
+    text: "I am Batman"
+    tags:
+      - gotham
+    dashboard_id: 1
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == false"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified range timestamp and tags and panel_id and dashboard_id
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ past }}"
+    time_end: "{{ now }}"
+    text: "I am Batman"
+    tags:
+      - gotham
+    panel_id: 1
+    dashboard_id: 1
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == true"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified timestamp and tags and panel_id and dashboard_id (idempotency)
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ past }}"
+    time_end: "{{ now }}"
+    text: "I am Batman"
+    tags:
+      - gotham
+    panel_id: 1
+    dashboard_id: 1
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == false"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified range timestamp and panel_id and dashboard_id
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ past }}"
+    time_end: "{{ now }}"
+    text: "I am Batman"
+    panel_id: 1
+    dashboard_id: 1
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == true"
+      - "result.failed == false"
+
+- name: Create a Grafana annotation with a specified timestamp and panel_id and dashboard_id (idempotency)
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ past }}"
+    time_end: "{{ now }}"
+    text: "I am Batman"
+    panel_id: 1
+    dashboard_id: 1
     state: present
   register: result
   ignore_errors: yes

@@ -212,16 +212,21 @@ class GrafanaAnnotationService(object):
             url, data=annotation.as_api_format(), headers=self.headers, method="POST")
         return response
 
+    # TODO: need to handle tags check!
     def get_annotation(self, annotation):
         url = "/api/annotations?" + self._build_search_uri_params(annotation)
         response = self._send_request(url, headers=self.headers, method="GET")
-        if len(response) > 1:
-            raise AssertionError(
-                "Expected 1 annotation, got %d" % len(response))
 
-        if len(response) == 0:
-            return None
-        return self._create_annotation_object(response[0])
+        if len(response) == 1:
+            return self._create_annotation_object(response[0])
+
+        if len(response) > 1:
+            for item in response:
+                if (item["time"] == annotation.time):
+                    if (item["timeEnd"] == annotation.time_end):
+                        return self._create_annotation_object(item)
+
+        return None
 
     def delete_annotation(self, annotation):
         url = "/api/annotations/%d" % annotation.id
