@@ -1,7 +1,27 @@
 ---
-- set_fact:
-    now: "{{ lookup('pipe','date +%s') | int *1000 }}"
-    past: "{{ now | int - (5 * 60 * 1000) }}"
+- name: Set 'now' variable
+  set_fact:
+    now: "{{ (lookup('pipe','date +%s') | int) * 1000 }}"
+
+- name: Set 'past' variable
+  set_fact:
+    past: "{{ (now | int) - (5 * 60 * 1000) }}"
+
+- name: Create a Grafana annotation with a specified range timestamp
+  grafana_annotation:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: admin
+    time: "{{ past }}"
+    time_end: "{{ now }}"
+    text: "I am Batman"
+    state: present
+  register: result
+  ignore_errors: yes
+- assert:
+    that:
+      - "result.changed == true"
+      - "result.failed == false"
 
 # - name: Create a Grafana annotation without a timestamp
 #   grafana_annotation:
@@ -9,6 +29,36 @@
 #     url_username: admin
 #     url_password: admin
 #     text: "I am Batman"
+#     state: present
+#   register: result
+#   ignore_errors: yes
+# - assert:
+#     that:
+#       - "result.changed == true"
+#       - "result.failed == false"
+
+# - name: Create a Grafana annotation without a timestamp with panel_id
+#   grafana_annotation:
+#     url: "http://127.0.0.1:3000"
+#     url_username: admin
+#     url_password: admin
+#     text: "I am Batman"
+#     panel_id: 1
+#     state: present
+#   register: result
+#   ignore_errors: yes
+# - assert:
+#     that:
+#       - "result.changed == true"
+#       - "result.failed == false"
+
+# - name: Create a Grafana annotation without a timestamp with dashboard_id
+#   grafana_annotation:
+#     url: "http://127.0.0.1:3000"
+#     url_username: admin
+#     url_password: admin
+#     text: "I am Batman"
+#     dashboard_id: 1
 #     state: present
 #   register: result
 #   ignore_errors: yes

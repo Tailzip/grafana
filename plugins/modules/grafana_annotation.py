@@ -146,6 +146,7 @@ annotation:
 '''
 
 import json
+from datetime import datetime
 from ansible.module_utils.six.moves.urllib.parse import quote_plus
 from ansible.module_utils.urls import fetch_url, url_argument_spec, basic_auth_header
 from ansible.module_utils.basic import AnsibleModule
@@ -153,21 +154,38 @@ from ansible.module_utils.urls import fetch_url, basic_auth_header, url_argument
 
 __metaclass__ = type
 
+now = int(datetime.now().timestamp() * 1000)
 
 class GrafanaAnnotation(object):
 
-    def __init__(self, text, time, tags=None, dashboard_id=None, panel_id=None, time_end=None, annotation_id=None):
+    def __init__(self, text, time=None, tags=None, dashboard_id=None, panel_id=None, time_end=None, annotation_id=None):
         ## Mandatory
         self.text = text
-        self.time = time
+
         ## Optional
+        self.time = time
+        # if time is None:
+        #     self.time = now
+
         self.tags = tags
+        if tags is None:
+            self.tags = []
+
         self.dashboard_id = dashboard_id
+        if dashboard_id is None:
+            self.dashboard_id = 0
+
         self.panel_id = panel_id
+        if panel_id is None:
+            self.panel_id = 0
+
         self.time_end = time_end
         if time_end is None:
             self.time_end = time
+
         self.id = annotation_id
+        if annotation_id is None:
+            self.id = 0
 
     def as_dict(self):
         return dict(text=self.text,
@@ -177,6 +195,9 @@ class GrafanaAnnotation(object):
                     panel_id=self.panel_id,
                     time_end=self.time_end,
                     id=self.id)
+
+    def as_json_for_comparison(self):
+        return json.dumps({k: v for k, v in self.as_dict().items() if k != "id"}, sort_keys=True)
 
     def as_api_format(self):
         return dict(text=self.text,
@@ -212,19 +233,16 @@ class GrafanaAnnotationService(object):
             url, data=annotation.as_api_format(), headers=self.headers, method="POST")
         return response
 
-    # TODO: need to handle tags check!
     def get_annotation(self, annotation):
         url = "/api/annotations?" + self._build_search_uri_params(annotation)
         response = self._send_request(url, headers=self.headers, method="GET")
 
-        if len(response) == 1:
-            return self._create_annotation_object(response[0])
-
-        if len(response) > 1:
+        if len(response) >= 1:
             for item in response:
-                if (item["time"] == annotation.time):
-                    if (item["timeEnd"] == annotation.time_end):
-                        return self._create_annotation_object(item)
+                annotation_item = self._create_annotation_object(item)
+
+                if (annotation_item.as_json_for_comparison() == annotation.as_json_for_comparison()):
+                    return annotation_item
 
         return None
 
@@ -307,9 +325,9 @@ del argument_spec['force_basic_auth']
 del argument_spec['http_agent']
 
 argument_spec.update(
-    time=dict(type='int', required=True),
     text=dict(type='str', required=True),
     state=dict(choices=['present', 'absent'], default='present'),
+    time=dict(type='int', required=False),
     dashboard_id=dict(type='int', required=False),
     panel_id=dict(type='int', required=False),
     time_end=dict(type='int', required=False),
@@ -334,8 +352,6 @@ def main():
 
     annotation_from_params = GrafanaAnnotation(
         text, time, tags, dashboard_id, panel_id, time_end)
-
-    ####
 
     grafana_service = GrafanaAnnotationService(module)
 
