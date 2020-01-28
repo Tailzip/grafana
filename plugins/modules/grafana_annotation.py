@@ -164,8 +164,8 @@ class GrafanaAnnotation(object):
 
         ## Optional
         self.time = time
-        # if time is None:
-        #     self.time = now
+        if time is None:
+            self.time = now
 
         self.tags = tags
         if tags is None:
@@ -181,7 +181,7 @@ class GrafanaAnnotation(object):
 
         self.time_end = time_end
         if time_end is None:
-            self.time_end = time
+            self.time_end = self.time
 
         self.id = annotation_id
         if annotation_id is None:
